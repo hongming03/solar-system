@@ -37,6 +37,13 @@ jobs:
           uses: actions/setup-node@v3
           with:
             node-version: ${{ matrix.nodejs_version }}
+
+        - name: Cache NPM dependencies
+          uses: action/cache@v4
+          with:
+            path: node_modules
+            key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+
     
         - name: Install Dependencies
           run: npm install
@@ -46,15 +53,17 @@ jobs:
           run: npm test
 
 # can access the artifact on github actions summary page
-        - name: Archive Test Result
+        # - name: Archive Test Result
+
           # if success()  - by default all steps status check is success() unless stated
           # if failure() - will run if previous step fails
           # if always() - will always run regardless if previous step fails/pass
-          if: always()
-          uses: actions/upload-artifact@v4
-          with:
-            name: Mocha-Test-Result
-            path: test-results.xml
+
+          # if always()
+          # uses: actions/upload-artifact@v4
+          # with:
+          #   name: Mocha-Test-Result
+          #   path: test-results.xml
 
     code-coverage:
       name: Code Coverage
@@ -68,6 +77,12 @@ jobs:
           uses: actions/setup-node@v3
           with:
             node-version: 18
+
+        - name: Cache NPM dependencies
+          uses: action/cache@v4
+          with:
+            path: node_modules
+            key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
 
         - name: Install Dependencies
           run: npm install
