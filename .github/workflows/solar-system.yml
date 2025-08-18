@@ -1,5 +1,7 @@
 name: Solar System Workflow
 
+# difference between continue-on-error and if failure() is that continue-on-error will providfe a pass on the job summary
+
 on: 
   workflow_dispatch:
   push:
@@ -46,7 +48,9 @@ jobs:
 # can access the artifact on github actions summary page
         - name: Archive Test Result
           # if success()  - by default all steps status check is success() unless stated
-          if: failure() && (steps.nodejs-unit-testing-step.outcome == 'failure' || steps.nodejs-unit-testing-step.outcome == 'success')
+          # if failure() - will run if previous step fails
+          # if always() - will always run regardless if previous step fails/pass
+          if: always()
           uses: actions/upload-artifact@v4
           with:
             name: Mocha-Test-Result
