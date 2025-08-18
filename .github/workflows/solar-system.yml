@@ -45,7 +45,8 @@ jobs:
 
 # can access the artifact on github actions summary page
         - name: Archive Test Result
-          if: steps.nodejs-unit-testing-step.outcome == 'failure' || steps.nodejs-unit-testing-step.outcome == 'success'
+          # if success()  - by default all steps status check is success() unless stated
+          if: failure() && (steps.nodejs-unit-testing-step.outcome == 'failure' || steps.nodejs-unit-testing-step.outcome == 'success')
           uses: actions/upload-artifact@v4
           with:
             name: Mocha-Test-Result
