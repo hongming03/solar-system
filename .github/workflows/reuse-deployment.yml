@@ -2,6 +2,7 @@ name: Deployment - Reuseable Workflow
 
 on:
     workflow_call:
+        # inputs are variables that are passed in by the caller workflow
         inputs:
             mongodb-uri:
                 required: true
@@ -31,8 +32,14 @@ on:
                 required: true
             mongodb-password:
                 required: true
+        
+        # Variables that are passed/returned to the caller workflow
+        outputs:
+            application-url:
+                value: ${{ jobs.reuse-deploy.outputs.APP_INGRESS_URL }}
+        
 
-    
+
 jobs:
     reuse-deploy:
         # Do not confuse this with env. env is the variable that can be used in job/steps. environment are the variables you set in github
@@ -42,7 +49,7 @@ jobs:
         url: https://${{ steps.set-ingress-host-address.outputs.APP_INGRESS_URL}}
       # Mapping output so that other jobs can use this variable
       outputs:
-        APP_INGRESS_URL: ${{ steps.set-ingress-host-address.outputs.APP_INGRESS_URL}}
+        APP_INGRESS_URL: ${{ steps.set-ingress-host-address.outputs.APP_INGRESS_URL }}
 
       runs-on: ubuntu-latest
       steps:
