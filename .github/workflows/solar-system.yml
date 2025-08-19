@@ -202,9 +202,41 @@ jobs:
           uses: azure/setup-kubectl@v3
           with:
             version: 'v1.26.0'
+
+        # - name: Set Kubeconfig file
+        #   uses: azure/k8s-set-context@v3
+        #   with:
+        #     method: kubeconfig
+        #     kubeconfig: ${{ secrets.KUBECONFIG }  }  WE DONT HAVE KUBECONFIG so we omit
         
-        - name: Fetch Kubernetes Cluster Details
+        # - name: Fetch Kubernetes Cluster Details
+        #   run: |
+        #     kubectl version --short
+        #     echo "----------------------------------------------------"
+        #     kubectl get nodes
+
+# ---------------------------------------
+
+        - name: Save Nginx Ingress Controller IP as a GITHUB Environment Variable
+
+        # Setting an environment variable     echo"{environment_variable_name}={value}" >> "$GITHUB_ENV"
           run: |
-            kubectl version --short
-            echo "----------------------------------------------------"
-            kubectl get nodes
+            echo "INGRESS_IP=$(kubectl -n ingress-nginx get services ingress-nginx-controller -o jsonpath="{.status.loadBalancer.ingress[0].ip}")" >> $GITHUB_ENV
+
+        # Replacing the variables in the kubernetes yml files by identifying custom prefixes
+        - name: Replace Token in Manifest files
+          uses: cschleiden/replace-tokens@v1
+          with:
+            tokenPrefix: '_{ '
+            tokenSuffix: ' }_'
+            files: '["kubernetes/development/*.yaml"]'
+          env:
+            NAMESPACE: ${{ vars.NAMESPACE }}
+            REPLICAS: ${{ vars.REPLICAS }}
+            IMAGE: ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
+            INGRESS_IP: ${{ env.INGRESS_IP }}
+
+        - name: Check files
+          run: |
+            cat kubernetes/development/*.yaml
+
