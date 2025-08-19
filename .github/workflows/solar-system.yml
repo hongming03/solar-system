@@ -198,7 +198,10 @@ jobs:
       needs: docker
       uses: ./.github\workflows\reuse-deployment.yml
 
-      
+      # Passing value from the caller to the called workflow (See reuse-deployment.yml)
+      secrets: 
+        k8s-kubeconfig: ${{ secrets.KUBECONFIG}}
+        mongodb-password: ${{ secrets.MONGO_PASSWORD }}
 
     dev-integration-testing:
       # If condition, will only run if it contains feature in the branch
@@ -226,7 +229,10 @@ jobs:
       # this needs docker instead of dev integration test
       needs: docker
       uses: ./.github\workflows\reuse-deployment.yml
-    
+      # Passing value from the caller to the called workflow (See reuse-deployment.yml)
+      secrets: 
+        k8s-kubeconfig: ${{ secrets.KUBECONFIG}}
+        mongodb-password: ${{ secrets.MONGO_PASSWORD }}
 
 
     prod-integration-testing:
