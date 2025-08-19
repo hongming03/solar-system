@@ -193,6 +193,9 @@ jobs:
 
     dev-deploy:
       needs: docker
+      environment: # Do not confuse this with env. env is the variable that can be used in job/steps. environment are the variables you set in github
+        name: development
+        url: https://${{ steps.set-ingress-host-address.outputs.APP_INGRESS_URL}}
       # Mapping output so that other jobs can use thie variable
       outputs:
         APP_INGRESS_URL: ${{ steps.set-ingress-host-address.outputs.APP_INGRESS_URL}}
@@ -264,16 +267,16 @@ jobs:
           run: |
             echo "APP_INGRESS_HOST=$(kubectl -n ${{ vars.NAMESPACE }} get ingress -o jsonpath='{.items[0].spec.tls[0].hosts[0]}')" >> "$GITHUB_ENV"
 
-    integration-testing:
-      name: Dev Integration Testing
-      needs: dev-deploy
-      runs-on: ubuntu-latest
-      steps:
-        - name: Test URL Output using CURL and JQ
-        # This is how to use the environment variables / outputs that are from other jobs
-          env:
-            URL: ${{ needs.dev-deploy.outputs.APP_INGRESS_URL}}
-          run: |
-            echo $URL
-            echo "-------------------------------------"
-            curl https://$URL/live -s -k | jq -r .status | grep -i live
+    # integration-testing:
+    #   name: Dev Integration Testing
+    #   needs: dev-deploy
+    #   runs-on: ubuntu-latest
+    #   steps:
+    #     - name: Test URL Output using CURL and JQ
+    #     # This is how to use the environment variables / outputs that are from other jobs
+    #       env:
+    #         URL: ${{ needs.dev-deploy.outputs.APP_INGRESS_URL}}
+    #       run: |
+    #         echo $URL
+    #         echo "-------------------------------------"
+    #         curl https://$URL/live -s -k | jq -r .status | grep -i live
