@@ -196,7 +196,7 @@ jobs:
       # If condition, will only run if it contains feature in the branch
       if: contains(github.ref, 'feature/')
       needs: docker
-      uses: .github\workflows\reuse-deployment.yml
+      uses: ./.github\workflows\reuse-deployment.yml
 
       
 
@@ -225,7 +225,7 @@ jobs:
 
       # this needs docker instead of dev integration test
       needs: docker
-      uses: .github\workflows\reuse-deployment.yml
+      uses: ./.github\workflows\reuse-deployment.yml
     
 
 
