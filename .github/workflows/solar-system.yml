@@ -101,6 +101,10 @@ jobs:
     docker:
       name: Containerization
       needs: [code-coverage, unit-testing]
+      # giving write access to the github token.Although i think default permission should be read but i was able to create the package without this 
+      permissions:
+        packages: write
+
       runs-on: ubuntu-latest
       steps:
       - name: Checkout Repo
