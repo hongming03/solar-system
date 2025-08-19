@@ -17,15 +17,19 @@ env:
 jobs:
     unit-testing:
         name: Unit Testing
-        services:
-          mongo-db:
-            image: siddharth67/mongo-db:non-prod
-            ports:
-              - 27017:27017
-        env:
-          MONGO_URI: 'mongodb://localhost:27017/superData'
-          MONGO_USERNAME: non-prod-user
-          MONGO_PASSWORD: non-prod-password
+
+
+        # It is a private docker container. You can access environment variables. E.g in app.js process.env.variablename
+
+        # services:
+        #   mongo-db:
+        #     image: siddharth67/mongo-db:non-prod
+        #     ports:
+        #       - 27017:27017
+        # env:
+        #   MONGO_URI: 'mongodb://localhost:27017/superData'
+        #   MONGO_USERNAME: non-prod-user
+        #   MONGO_PASSWORD: non-prod-password
 
         strategy:
           matrix:
@@ -76,16 +80,37 @@ jobs:
 
     code-coverage:
       name: Code Coverage
+      container:
+        image: node:18
+
+
+      services:
+        mongo-db:
+          image: siddharth67/mongo-db:non-prod
+          # ports:    -- Job and service container uses the same user-define bridge network. Exposes all ports to each other, don't need to map ports
+          #   - 27017:27017
+          options: 
+            --name mongo
+
+      env:
+        MONGO_URI: 'mongodb://mongo:27017/superData'
+        MONGO_USERNAME: non-prod-user
+        MONGO_PASSWORD: non-prod-password
+
+
+
       runs-on: ubuntu-latest
       
       steps:
         - name: Checkout Repository
           uses: actions/checkout@v4
 
-        - name: Setup Node.js Version - 18
-          uses: actions/setup-node@v3
-          with:
-            node-version: 18
+
+        # Not needed as we will be running the job in a nodejs container  
+        # - name: Setup Node.js Version - 18
+        #   uses: actions/setup-node@v3
+        #   with:
+        #     node-version: 18
 
         - name: Cache NPM dependencies
           uses: actions/cache@v4
