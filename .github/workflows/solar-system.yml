@@ -192,6 +192,9 @@ jobs:
 
 
     dev-deploy:
+
+      # If condition, will only run if it contains feature in the branch
+      if: contains(github.ref, 'feature/')
       needs: docker
 
       # Do not confuse this with env. env is the variable that can be used in job/steps. environment are the variables you set in github
@@ -271,6 +274,9 @@ jobs:
             echo "APP_INGRESS_HOST=$(kubectl -n ${{ vars.NAMESPACE }} get ingress -o jsonpath='{.items[0].spec.tls[0].hosts[0]}')" >> "$GITHUB_ENV"
 
     dev-integration-testing:
+      # If condition, will only run if it contains feature in the branch
+      if: contains(github.ref, 'feature/')
+
       name: Dev Integration Testing
       needs: dev-deploy
       runs-on: ubuntu-latest
@@ -287,7 +293,10 @@ jobs:
         
 
     prod-deploy:
-      needs: dev-integration-testing
+      # If condition, will only run if it contains feature in the branch
+      if: github.ref == 'refs/heads/main'
+
+      needs: docker
 
     # Do not confuse this with env. env is the variable that can be used in job/steps. environment are the variables you set in github
     # NOTE: environment variables override repository variables that are set in github
@@ -367,6 +376,9 @@ jobs:
 
 
     prod-integration-testing:
+      # If condition, will only run if it contains feature in the branch
+      if: github.ref == 'refs/heads/main'
+
       name: PROD Integration Testing
       needs: prod-deploy
       runs-on: ubuntu-latest
