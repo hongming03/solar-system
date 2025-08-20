@@ -132,7 +132,7 @@ jobs:
             path: coverage
             retention-days: 5
 
-            
+
     reports-s3:
         needs: [code-coverage, unit-testing]
         name: AWS S3 - Upload Reports
@@ -140,12 +140,12 @@ jobs:
         continue-on-error: true
         steps:
           - name: Download Mocha Test Artifact
-            uses: actions/download-artifact@v3
+            uses: actions/download-artifact@v4
             with:
               name: Mocha-Test-Result
 
           - name: Download Code Coverage Artifact
-            uses: actions/download-artifact@v3
+            uses: actions/download-artifact@v4
             with:
               name: Code-Coverage-Result
 
