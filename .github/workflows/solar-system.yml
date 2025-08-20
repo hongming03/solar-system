@@ -52,7 +52,7 @@ jobs:
 
             # Caching the package-lock.json so that for subsequence workflows, we do not need to reinstall the packages. npm install will run faster
         - name: Composite Action - Cache & Install NPM Packages
-          uses: ./.github\workflows\custom-actions\npm-action
+          uses: ./.github/workflows/custom-actions/npm-action
           with:
             path-to-folder: node_modules
 
@@ -110,7 +110,7 @@ jobs:
 
          # Caching the package-lock.json so that for subsequence workflows, we do not need to reinstall the packages. npm install will run faster
         - name: Composite Action - Cache & Install NPM Packages
-          uses: ./.github\workflows\custom-actions\npm-action
+          uses: ./.github/workflows/custom-actions/npm-action
           with:
             path-to-folder: node_modules
 
