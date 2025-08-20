@@ -1,0 +1,5 @@
+name: 'NPM Custom Action'
+description: 'Installing and Caching NPM packages'
+runs:
+  using: "composite"
+  steps:

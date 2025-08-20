@@ -231,7 +231,8 @@ jobs:
 
 
     slack-notification:
-      if: always()
+      #Will still run even when workflow is cancelled
+      if: always() 
       name: Slack Notification
       # Ideally should be after dev/prod integration test
       needs: [docker]
