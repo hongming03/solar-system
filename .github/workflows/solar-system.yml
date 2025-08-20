@@ -158,18 +158,21 @@ jobs:
               ls -ltr reports-${{ github.sha }}/
 
           - name: Upload to AWS S3
-            uses: jakejarvis/s3-sync-action@master
-            with:
-              args: --follow-symlinks --delete
-            env:
-              AWS_S3_BUCKET: solar-system-reports-bucket
-              AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-              AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-              AWS_REGION: us-east-1
-              SOURCE_DIR: 'reports-${{ github.sha }}'
-              DEST_DIR: 'reports-${{ github.sha }}'
+            # uses: jakejarvis/s3-sync-action@master
+            # with:
+            #   args: --follow-symlinks --delete
+            # env:
+            #   AWS_S3_BUCKET: solar-system-reports-bucket
+            #   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID } }
+            #   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY } }
+            #   AWS_REGION: us-east-1
+            #   SOURCE_DIR: 'reports-${{ github.sha } }'
+            #   DEST_DIR: 'reports-${{ github.sha } }'
+            run: echo " Uploading to AWS"
 
     docker:
+      
+
       name: Containerization
       needs: [code-coverage, unit-testing]
       # giving write access to the github token.Although i think default permission should be read but i was able to create the package without this 
@@ -225,3 +228,22 @@ jobs:
           tags: | 
             ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
             ghcr.io/hongming200/solar-system:${{ github.sha }}
+
+
+    slack-notification:
+      if: always()
+      name: Slack Notification
+      needs: [dev-integration-test, prod-integration-test]
+      continue-on-error: true
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - name: Slack Notification
+          uses: rtCamp/action-slack-notify@v2
+          env:
+            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+            SLACK_CHANNEL: github-actions-channel
+            SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
+            SLACK_ICON: https://gitlab.com/sidd-harth/solar-system/-/raw/main/images/saturn.png
+            SLACK_MESSAGE: ':hammer_and_wrench Triggered by ${{ github.actor }}'
+            SLACK_TITLE: Information
